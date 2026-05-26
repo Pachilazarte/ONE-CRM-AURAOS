@@ -8,7 +8,7 @@ import { API_BASE } from '@/lib/types';
 export default function ExtraccionPage() {
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [targetAccount, setTargetAccount] = useState('');
-  const [maxFollowers, setMaxFollowers] = useState(100);
+  const [maxFollowers, setMaxFollowers] = useState(-1);
   const [isStarting, setIsStarting] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [resetCursor, setResetCursor]   = useState(false);
@@ -165,7 +165,7 @@ export default function ExtraccionPage() {
                     <option value={100}>100 perfiles — normal</option>
                     <option value={500}>500 perfiles — completo</option>
                     <option value={1000}>1 000 perfiles — profundo</option>
-                    <option value={-1}>Vaciado Total (Hasta 10k seg.)</option>
+                    <option value={-1}>✨ Automático (Detectar total de seguidores)</option>
                   </select>
                 </div>
               </>

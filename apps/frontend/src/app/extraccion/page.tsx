@@ -286,15 +286,32 @@ export default function ExtraccionPage() {
 
             <div className="col-span-12 md:col-span-7 grid grid-cols-2 gap-3">
               {[
-                { label: 'Vistas', value: vistas,    color: '#6be1e3', icon: Eye,   sub: 'perfiles escaneados' },
-                { label: 'Pendientes', value: pendientes, color: '#e4c76a', icon: Clock, sub: 'restantes del objetivo' },
-              ].map(({ label, value, color, icon: Icon, sub }) => (
-                <div key={label} className="bg-white/[0.01] border border-white/5 rounded-xl p-3.5">
+                { 
+                  label: 'Vistas', 
+                  value: <span className="text-lg font-black font-exo text-[#6be1e3]">{vistas}</span>,    
+                  icon: Eye,   
+                  sub: 'perfiles escaneados' 
+                },
+                { 
+                  label: 'Pendientes', 
+                  value: activeJob && maxLimit <= 0 ? (
+                    <span className="flex items-center gap-1.5 text-xs font-extrabold text-[#e4c76a] animate-pulse py-1">
+                      <RefreshCcw size={11} className="animate-spin text-[#e4c76a]" />
+                      Calculando...
+                    </span>
+                  ) : (
+                    <span className="text-lg font-black font-exo text-[#e4c76a]">{pendientes}</span>
+                  ), 
+                  icon: Clock, 
+                  sub: maxLimit <= 0 ? 'Total dinámico' : 'restantes del objetivo' 
+                },
+              ].map(({ label, value, icon: Icon, sub }) => (
+                <div key={label} className="bg-white/[0.01] border border-white/5 rounded-xl p-3.5 flex flex-col justify-between min-h-[82px]">
                   <div className="flex items-center gap-1 text-[9px] font-extrabold text-[#a4a8c0] uppercase tracking-wider mb-1">
-                    <Icon size={10} style={{ color }} />{label}
+                    <Icon size={10} className="text-[#a4a8c0]" />{label}
                   </div>
-                  <div className="text-lg font-black font-exo" style={{ color }}>{value}</div>
-                  <div className="text-[8px] text-[#a4a8c0]/60">{sub}</div>
+                  <div>{value}</div>
+                  <div className="text-[8px] text-[#a4a8c0]/60 mt-1">{sub}</div>
                 </div>
               ))}
               <div className="col-span-2 bg-white/[0.01] border border-white/5 rounded-xl p-3.5 flex items-center justify-between">

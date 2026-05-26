@@ -1,0 +1,19 @@
+[
+  {
+    "username": "cuenta_1",
+    "status": "active",
+    "cookies": {
+      "csrftoken": "GUGudW4NLy0qAn35luI4bU",
+      "datr": "oS1xadMyg782vdqccNyYqb9q",
+      "ds_user_id": "75756985227",
+      "ig_did": "61B4B343-EA82-4EA9-B93F-7734D26C3868",
+      "ig_nrcb": "1",
+      "mid": "aWVA7gALAAFJk00f6IyUuSKnapwS",
+      "ps_l": "1",
+      "ps_n": "1",
+      "rur": "\"ATG\\05454399633549\\0541810755026:01fe38930ed97a4a37fba0646e95d1c72b245383f6ff4f6c3782075a6c2fa4fa4f7b2953\"",
+      "sessionid": "75756985227%3AXtABHzmD4PhG3y%3A9%3AAYiBmiCDf3YTXaMqB-r78u9K61D1uR0FYSS-pncq2g",
+      "wd": "380x630"
+    }
+  }
+]

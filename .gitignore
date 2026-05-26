@@ -8,7 +8,6 @@ apps/api/jobs.json
 apps/api/campaigns.json
 apps/scraper/leads_*.csv
 apps/scraper/known_emails.json
-apps/scraper/accounts.json
 
 # ── Python ───────────────────────────────────
 __pycache__/

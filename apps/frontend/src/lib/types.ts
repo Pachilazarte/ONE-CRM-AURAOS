@@ -2,7 +2,7 @@
 export interface Analysis {
   id: string;
   target: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'error';
   usersAnalyzed: number;
   maxFollowers?: number;
   usersFound: number;

@@ -366,7 +366,7 @@ export default function ExtraccionPage() {
                 </div>
                 <div className="text-[10px] text-[#a4a8c0] flex justify-between">
                   <span>Leads: <b className="text-[#e17bd7]">{a.usersFound}</b></span>
-                  <span>Límite: <b className="text-white">{a.maxFollowers ?? 100}</b></span>
+                  <span>Límite: <b className="text-white">{a.maxFollowers && a.maxFollowers > 0 ? a.maxFollowers : (a.status === 'completed' ? a.usersAnalyzed : '∞ (Auto)')}</b></span>
                 </div>
                 <div className="w-full bg-black/40 h-1 rounded-full overflow-hidden">
                   <div className={`h-full rounded-full transition-all ${(a.status==='failed' || a.status==='error') ? 'bg-red-500' : 'bg-gradient-to-r from-[#e17bd7] to-[#6be1e3]'}`}

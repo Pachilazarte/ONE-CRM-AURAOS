@@ -87,7 +87,7 @@ export default function ExtraccionPage() {
         <h1 className="text-2xl font-extrabold font-exo flex items-center gap-2">
           <Zap size={22} className="text-[#e17bd7]" />
           Extracción de Datos
-          <span className="text-[9px] font-bold text-[#6be1e3]/70 bg-[#6be1e3]/10 border border-[#6be1e3]/20 px-2 py-0.5 rounded-full uppercase tracking-widest ml-1">v1.0.5</span>
+          <span className="text-[9px] font-bold text-[#6be1e3]/70 bg-[#6be1e3]/10 border border-[#6be1e3]/20 px-2 py-0.5 rounded-full uppercase tracking-widest ml-1">v1.0.6</span>
         </h1>
         <p className="text-xs text-[#a4a8c0] mt-0.5">Extrae leads con email de los seguidores de una cuenta de Instagram.</p>
       </div>

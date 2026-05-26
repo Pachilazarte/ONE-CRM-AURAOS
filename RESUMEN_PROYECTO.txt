@@ -1,0 +1,117 @@
+================================================================
+  ONE CRM — RESUMEN DEL PROYECTO
+  Fecha: Mayo 2026
+================================================================
+
+¿QUÉ ES?
+--------
+ONE CRM es una plataforma web privada para captar leads (contactos
+comerciales) de Instagram y enviarles campañas de email masivo.
+
+Está compuesta por:
+  - Frontend web (Next.js) en localhost:3000
+  - API backend (Python/Flask) en localhost:5000
+  - Base de datos en Supabase (nube)
+  - Scraper de Instagram (Python)
+  - Sistema de emails con Resend
+
+¿QUÉ HACE?
+----------
+1. EXTRACCIÓN: El scraper entra a Instagram con una cuenta burner,
+   escanea los seguidores de una cuenta objetivo (ej: positivo.rrhh)
+   y guarda en la base de datos solo los perfiles que tienen email
+   público visible.
+
+2. PROSPECTOS: Panel donde ves todos los leads captados, podés
+   filtrarlos, agregar manualmente, importar CSV y enviar emails
+   individuales o masivos.
+
+3. CAMPAÑAS: Creás un email con asunto + cuerpo HTML, seleccionás
+   los destinatarios y el sistema lo envía a todos automáticamente
+   desde one@escencialconsultora.com (dominio verificado).
+
+4. DASHBOARD: Resumen de estadísticas: leads totales, emails enviados,
+   extracciones completadas, calidad de leads, top fuentes.
+
+ESTADO ACTUAL DEL SISTEMA
+--------------------------
+✓ Frontend funcionando (localhost:3000)
+✓ API funcionando (localhost:5000)
+✓ Base de datos Supabase conectada (46 leads guardados)
+✓ Emails funcionando desde one@escencialconsultora.com
+✓ Dominio escencialconsultora.com verificado en Resend
+✓ Sistema de proxies gratuitos implementado (3 fuentes, ~500 IPs)
+✓ Rotación de User-Agent implementada
+✓ Sesión de Instagram configurable desde la UI
+
+ERROR ACTUAL — INSTAGRAM 429 (RATE LIMIT)
+------------------------------------------
+SÍNTOMA:
+  El scraper intenta conectarse a Instagram y recibe error 429
+  (Too Many Requests) en el primer request.
+
+CAUSA:
+  La IP desde donde se ejecuta el scraper está bloqueada por
+  Instagram temporalmente. Esto sucede cuando Instagram detecta
+  demasiadas requests automatizadas desde la misma IP.
+
+  IPs probadas que están baneadas:
+  - IP real del usuario (Argentina)
+  - ProtonVPN USA - US-FREE#42 (37.19.221.229)
+  - ProtonVPN Canadá - CA-FREE#21 (217.138.213.53)
+
+  Los proxies gratuitos implementados (free-proxy-list, proxyscrape,
+  geonode) no funcionan para Instagram porque son IPs de datacenter
+  que Instagram bloquea a nivel de red.
+
+SOLUCIONES DISPONIBLES
+-----------------------
+OPCIÓN 1 — HOTSPOT MÓVIL (GRATIS, INMEDIATO)
+  Las IPs de redes móviles (Claro, Personal, Movistar) son
+  residenciales y casi nunca están bloqueadas por Instagram.
+  Pasos:
+    1. Activar punto de acceso en el celular
+    2. Conectar la PC al hotspot
+    3. Abrir Instagram en el navegador, loguear cuenta burner
+    4. Copiar el sessionid desde DevTools
+    5. Actualizar en ONE CRM → Extracción → Sesión de Instagram
+    6. Ejecutar el scraper
+
+OPCIÓN 2 — ESPERAR 24-48 HORAS
+  El bloqueo de Instagram es temporal. La IP real
+  debería desbloquearse sola en 24-48 horas de inactividad.
+
+OPCIÓN 3 — PROXIES RESIDENCIALES PAGOS ($300-500/mes)
+  Bright Data o Oxylabs proveen IPs residenciales reales
+  que Instagram no detecta como proxies.
+  Requiere integración técnica y pago mensual.
+
+RECOMENDACIÓN INMEDIATA:
+  Usar el hotspot del celular (Opción 1) — es gratis, rápido
+  y funciona de inmediato.
+
+================================================================
+DATOS TÉCNICOS
+================================================================
+
+Stack tecnológico:
+  - Frontend: Next.js 16 (App Router), TypeScript, Tailwind CSS
+  - Backend: Python 3.14, Flask, instaloader
+  - Base de datos: Supabase (PostgreSQL)
+  - Emails: Resend API
+  - Scraping: Instagram Mobile API (api/v1/)
+
+Archivos clave:
+  - apps/api/api.py          → API REST (Flask)
+  - apps/scraper/scraper.py  → Lógica de scraping Instagram
+  - apps/scraper/proxy_manager.py → Gestión de proxies gratuitos
+  - apps/scraper/accounts.json    → Cookies de sesión Instagram
+  - apps/frontend/src/app/  → Páginas del CRM
+  - .env                    → Variables de entorno (claves API)
+
+Credenciales activas:
+  - Resend: re_SJGgfZ48_... (one@escencialconsultora.com)
+  - Supabase: ivrezkquzzohrebrtgxy.supabase.co
+  - Instagram burner: cuenta_1 (ds_user_id: 75756985227)
+
+================================================================

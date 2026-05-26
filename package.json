@@ -1,0 +1,20 @@
+{
+  "name": "mailerfind",
+  "version": "1.0.0",
+  "description": "Instagram lead generation platform",
+  "private": true,
+  "workspaces": [
+    "apps/frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:api\" \"python -u apps/api/worker.py\"",
+    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev:api": "python -u apps/api/api.py",
+    "build": "cd apps/frontend && npm run build",
+    "start": "cd apps/frontend && npm run start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.3.3"
+  }
+}

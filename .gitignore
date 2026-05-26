@@ -1,0 +1,40 @@
+# ── Environment ──────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Data files (contain leads / PII) ────────
+apps/api/jobs.json
+apps/api/campaigns.json
+apps/scraper/leads_*.csv
+apps/scraper/known_emails.json
+apps/scraper/accounts.json
+
+# ── Python ───────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# ── Node ─────────────────────────────────────
+node_modules/
+.next/
+out/
+
+# ── IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Misc ─────────────────────────────────────
+*.log
+npm-debug.log*

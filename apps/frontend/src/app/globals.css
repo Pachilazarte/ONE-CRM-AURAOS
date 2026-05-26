@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: #1a181d;
+  --color-foreground: #fefeff;
+  --color-primary-black: #000000;
+  --color-accent-pink: #e17bd7;
+  --color-accent-cyan: #6be1e3;
+  --color-accent-gold: #e4c76a;
+  --color-muted-blue: #a4a8c0;
+  --color-light-gray: #c6c9d7;
+
+  --font-exo: "Exo 2", sans-serif;
+  --font-futura: "Futura", "Inter", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: #1a181d;
+    color: #fefeff;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-exo);
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(225, 123, 215, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .sidebar-gradient {
+    background: linear-gradient(180deg, #1a181d 0%, #000000 100%);
+  }
+
+  .btn-one {
+    background: #e17bd7;
+    color: #000000;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-family: var(--font-exo);
+  }
+
+  .btn-one:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px rgba(225, 123, 215, 0.3);
+    transform: scale(1.02);
+  }
+
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}

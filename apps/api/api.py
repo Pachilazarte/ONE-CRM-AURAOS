@@ -370,17 +370,17 @@ def get_all_jobs():
             elif status == "running":
                 status = "processing"
             
-            max_followers = j.get("max_followers") or 1000
-            if max_followers <= 0:
-                max_followers = 10000
+            max_followers = j.get("max_followers")
+            if max_followers is None:
+                max_followers = 1000
+            
+            prog_limit = max_followers if max_followers > 0 else 10000
             users_analyzed = j.get("users_analyzed") or 0
             
             if status == "completed":
                 progress = 100
-            elif status == "processing":
-                progress = min(99, int((users_analyzed / max_followers) * 100))
             else:
-                progress = min(99, int((users_analyzed / max_followers) * 100))
+                progress = min(99, int((users_analyzed / prog_limit) * 100))
 
             result.append({
                 "id": j["id"], "target": j["source_account"], "status": status,
@@ -426,17 +426,17 @@ def get_job_status(job_id):
         elif status == "running":
             status = "processing"
             
-        max_followers = j.get("max_followers") or 1000
-        if max_followers <= 0:
-            max_followers = 10000
+        max_followers = j.get("max_followers")
+        if max_followers is None:
+            max_followers = 1000
+            
+        prog_limit = max_followers if max_followers > 0 else 10000
         users_analyzed = j.get("users_analyzed") or 0
         
         if status == "completed":
             progress = 100
-        elif status == "processing":
-            progress = min(99, int((users_analyzed / max_followers) * 100))
         else:
-            progress = min(99, int((users_analyzed / max_followers) * 100))
+            progress = min(99, int((users_analyzed / prog_limit) * 100))
             
         return jsonify({
             "id": j["id"],

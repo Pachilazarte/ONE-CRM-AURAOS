@@ -199,6 +199,7 @@ def run_scraper(job_id: str, source_account: str, max_followers: int, output_fil
         result = subprocess.run(
             cmd,
             capture_output=True, text=True,
+            cwd=str(SCRAPER_DIR),
         )
         leads_found = count_leads(output_file)
         if USE_SUPABASE:
@@ -322,7 +323,7 @@ def start_scraping():
     reset_cursor_flag = data.resetCursor
     output_file = SCRAPER_DIR / f"leads_{source_account}.csv"
 
-    print(f"[v1.0.2] START_SCRAPING: account={source_account}, max_followers={max_followers}, reset={reset_cursor_flag}", flush=True)
+    print(f"[v1.0.7] START_SCRAPING: account={source_account}, max_followers={max_followers}, reset={reset_cursor_flag}", flush=True)
 
     if USE_SUPABASE:
         sb = get_sb()
@@ -335,7 +336,7 @@ def start_scraping():
             "reset_cursor": reset_cursor_flag,
             "usernames": data.usernames,
         }
-        print(f"[v1.0.2] INSERT DATA: {insert_data}", flush=True)
+        print(f"[v1.0.7] INSERT DATA: {insert_data}", flush=True)
         sb.from_("scraper_jobs").insert(insert_data).execute()
     else:
         job_id = str(uuid.uuid4())[:8]
@@ -373,19 +374,27 @@ def get_all_jobs():
             max_followers = j.get("max_followers")
             if max_followers is None:
                 max_followers = 1000
-            
-            prog_limit = max_followers if max_followers > 0 else 10000
             users_analyzed = j.get("users_analyzed") or 0
-            
-            if status == "completed":
-                progress = 100
+
+            # v1.0.7: Modo automático — no fabricar 10000
+            if max_followers <= 0:
+                if status == "completed":
+                    display_max = users_analyzed if users_analyzed > 0 else 0
+                    progress = 100
+                else:
+                    display_max = 0  # Frontend muestra spinner
+                    progress = 0
             else:
-                progress = min(99, int((users_analyzed / prog_limit) * 100))
+                display_max = max_followers
+                if status == "completed":
+                    progress = 100
+                else:
+                    progress = min(99, int((users_analyzed / max(display_max, 1)) * 100))
 
             result.append({
                 "id": j["id"], "target": j["source_account"], "status": status,
                 "usersAnalyzed": users_analyzed,
-                "maxFollowers": max_followers, "usersFound": j.get("leads_found") or 0,
+                "maxFollowers": display_max, "usersFound": j.get("leads_found") or 0,
                 "progress": progress,
                 "date": (j.get("created_at") or "")[:10],
                 "errorMessage": j.get("error_message"),
@@ -429,22 +438,30 @@ def get_job_status(job_id):
         max_followers = j.get("max_followers")
         if max_followers is None:
             max_followers = 1000
-            
-        prog_limit = max_followers if max_followers > 0 else 10000
         users_analyzed = j.get("users_analyzed") or 0
-        
-        if status == "completed":
-            progress = 100
+
+        # v1.0.7: Modo automático — no fabricar 10000
+        if max_followers <= 0:
+            if status == "completed":
+                display_max = users_analyzed if users_analyzed > 0 else 0
+                progress = 100
+            else:
+                display_max = 0
+                progress = 0
         else:
-            progress = min(99, int((users_analyzed / prog_limit) * 100))
-            
+            display_max = max_followers
+            if status == "completed":
+                progress = 100
+            else:
+                progress = min(99, int((users_analyzed / max(display_max, 1)) * 100))
+
         return jsonify({
             "id": j["id"],
             "status": status,
             "leadsFound": j.get("leads_found", 0),
             "progress": progress,
             "errorMessage": j.get("error_message"),
-            "maxFollowers": max_followers,
+            "maxFollowers": display_max,
             "usersAnalyzed": users_analyzed
         })
     jobs = load_jobs()
@@ -695,34 +712,7 @@ def dashboard_stats():
     })
 
 
-# ── Instagram Session ────────────────────────
-
-@app.get("/api/v1/accounts/session")
-def get_session():
-    try:
-        accounts = json.loads((SCRAPER_DIR / "accounts.json").read_text(encoding="utf-8"))
-        sid = accounts[0]["cookies"].get("sessionid", "") if accounts else ""
-        masked = sid[:8] + "..." + sid[-6:] if len(sid) > 14 else sid
-        return jsonify({"sessionid": masked, "username": accounts[0].get("username","") if accounts else ""})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.put("/api/v1/accounts/session")
-def update_session():
-    body = request.get_json(force=True) or {}
-    sessionid = body.get("sessionid", "").strip()
-    if not sessionid:
-        return jsonify({"error": "sessionid requerido"}), 400
-    try:
-        path = SCRAPER_DIR / "accounts.json"
-        accounts = json.loads(path.read_text(encoding="utf-8"))
-        if not accounts:
-            return jsonify({"error": "No hay cuentas configuradas"}), 400
-        accounts[0]["cookies"]["sessionid"] = sessionid
-        path.write_text(json.dumps(accounts, indent=2, ensure_ascii=False), encoding="utf-8")
-        return jsonify({"ok": True})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+# ── Instagram Session (REMOVED in v1.0.7 — session management descartado) ──
 
 
 # ── Emails ───────────────────────────────────

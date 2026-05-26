@@ -728,26 +728,14 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
         sys.stderr.write(f"Error crítico: No se pudo obtener el perfil @{target}. Verificá que el nombre de usuario sea correcto, que la sesión sea válida y que la IP/Proxy no estén bloqueadas.\n")
         sys.exit(1)
 
-    # Vaciado Total
+    # Vaciado Total (v1.0.7: sin límite artificial de 10000)
     if max_followers <= 0:
-        if followers_count <= 0:
-            max_followers = 10000
-            log.info(f"Vaciado Total activado: El conteo de seguidores es desconocido. Escaneando hasta el límite máximo de 10k seguidores.")
-        elif followers_count <= 10000:
-            max_followers = followers_count
+        if followers_count > 0:
             log.info(f"Vaciado Total activado: Escaneando los {followers_count} seguidores de @{target}.")
         else:
-            max_followers = 10000
-            log.warning(f"Vaciado Total limitado: @{target} tiene {followers_count} seguidores (supera el límite de 10k). Limitando a 10,000.")
-        
-        if job_id:
-            try:
-                client = get_supabase_client()
-                if client:
-                    client.from_("scraper_jobs").update({"max_followers": max_followers}).eq("id", job_id).execute()
-                    log.info(f"Actualizado max_followers a {max_followers} en Supabase.")
-            except Exception as e:
-                log.warning(f"Error actualizando max_followers en Supabase: {e}")
+            log.info(f"Vaciado Total activado: El conteo de seguidores es desconocido. Escaneando hasta que no haya más.")
+        # Dejamos max_followers en -1 para que el loop no corte
+        # NO actualizamos max_followers en la DB todavía—se actualizará al final con el total real
 
     log.info(f"@{target} (id={target_user_id}) tiene {followers_count} seguidores. Escaneando hasta {max_followers}...")
 
@@ -892,7 +880,7 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
                     except Exception:
                         pass
 
-            while checked < max_followers:
+            while max_followers < 0 or checked < max_followers:
                 page_users, next_max_id = get_followers_page(ig_session, target_user_id, cursor_max_id)
 
                 if not page_users:
@@ -900,7 +888,7 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
                     break
 
                 for user in page_users:
-                    if checked >= max_followers:
+                    if max_followers >= 0 and checked >= max_followers:
                         break
 
                     username = user.get("username", "")
@@ -1014,7 +1002,7 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
                         log.warning(f"Error en @{username}: {e}")
                         continue
 
-                if not next_max_id or checked >= max_followers:
+                if not next_max_id or (max_followers >= 0 and checked >= max_followers):
                     break
 
                 cursor_max_id = next_max_id
@@ -1046,7 +1034,16 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
             json.dump(list(known_usernames), f)
         if job_id:
             try:
+                # v1.0.7: Al terminar, actualizar max_followers al total real escaneado
+                final_updates = {"leads_found": leads_found, "users_analyzed": checked}
+                if max_followers < 0:
+                    # Era modo automático: guardar el total real como max_followers
+                    final_updates["max_followers"] = checked
                 update_db_stats(job_id, leads_found, checked)
+                client = get_supabase_client()
+                if client and max_followers < 0:
+                    client.from_("scraper_jobs").update({"max_followers": checked}).eq("id", job_id).execute()
+                    log.info(f"v1.0.7: max_followers actualizado a {checked} (total real escaneado) en Supabase.")
             except Exception as e:
                 log.warning(f"Error al escribir stats finales: {e}")
 

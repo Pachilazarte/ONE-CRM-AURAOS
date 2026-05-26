@@ -54,7 +54,6 @@ export default function ExtraccionPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sourceAccount: targetAccount.replace('@','').trim(),
-          userId: '',
           maxFollowers: activeTab === 'manual' ? -1 : Number(maxFollowers),
           resetCursor,
           hibernate,
@@ -75,8 +74,9 @@ export default function ExtraccionPage() {
   };
 
   const vistas    = activeJob?.usersAnalyzed ?? 0;
-  const maxLimit  = activeJob?.maxFollowers  ?? maxFollowers;
-  const pendientes = Math.max(0, maxLimit - vistas);
+  const maxLimit  = activeJob?.maxFollowers  ?? (maxFollowers > 0 ? maxFollowers : 0);
+  const isAutoMode = maxLimit <= 0;
+  const pendientes = isAutoMode ? 0 : Math.max(0, maxLimit - vistas);
 
   return (
     <div className="w-full max-w-6xl mx-auto p-6 space-y-6 relative">
@@ -87,7 +87,7 @@ export default function ExtraccionPage() {
         <h1 className="text-2xl font-extrabold font-exo flex items-center gap-2">
           <Zap size={22} className="text-[#e17bd7]" />
           Extracción de Datos
-          <span className="text-[9px] font-bold text-[#6be1e3]/70 bg-[#6be1e3]/10 border border-[#6be1e3]/20 px-2 py-0.5 rounded-full uppercase tracking-widest ml-1">v1.0.6</span>
+          <span className="text-[9px] font-bold text-[#6be1e3]/70 bg-[#6be1e3]/10 border border-[#6be1e3]/20 px-2 py-0.5 rounded-full uppercase tracking-widest ml-1">v1.0.7</span>
         </h1>
         <p className="text-xs text-[#a4a8c0] mt-0.5">Extrae leads con email de los seguidores de una cuenta de Instagram.</p>
       </div>
@@ -294,16 +294,16 @@ export default function ExtraccionPage() {
                 },
                 { 
                   label: 'Pendientes', 
-                  value: activeJob && maxLimit <= 0 ? (
+                  value: activeJob && isAutoMode ? (
                     <span className="flex items-center gap-1.5 text-xs font-extrabold text-[#e4c76a] animate-pulse py-1">
                       <RefreshCcw size={11} className="animate-spin text-[#e4c76a]" />
-                      Calculando...
+                      Escaneando...
                     </span>
                   ) : (
                     <span className="text-lg font-black font-exo text-[#e4c76a]">{pendientes}</span>
                   ), 
                   icon: Clock, 
-                  sub: maxLimit <= 0 ? 'Total dinámico' : 'restantes del objetivo' 
+                  sub: isAutoMode ? 'Detectando total...' : 'restantes del objetivo' 
                 },
               ].map(({ label, value, icon: Icon, sub }) => (
                 <div key={label} className="bg-white/[0.01] border border-white/5 rounded-xl p-3.5 flex flex-col justify-between min-h-[82px]">

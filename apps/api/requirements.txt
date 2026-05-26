@@ -8,4 +8,6 @@ postgrest>=2.0.0
 pydantic[email]>=2.0.0
 httpx>=0.26.0
 gunicorn>=21.2.0
+curl_cffi
+
 

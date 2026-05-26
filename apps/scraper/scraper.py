@@ -178,6 +178,19 @@ def build_loader():
     )
     apply_to_session(L.context._session)
 
+    # v1.0.7: Auto-generar accounts.json desde variable de entorno si no existe (Render)
+    if not ACCOUNTS_FILE.exists():
+        env_accounts = os.environ.get("IG_ACCOUNTS_JSON", "").strip()
+        if env_accounts:
+            try:
+                parsed = json.loads(env_accounts)
+                ACCOUNTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+                with open(ACCOUNTS_FILE, "w", encoding="utf-8") as f:
+                    json.dump(parsed, f, indent=2, ensure_ascii=False)
+                log.info("accounts.json generado desde variable de entorno IG_ACCOUNTS_JSON.")
+            except Exception as e:
+                log.error(f"Error parseando IG_ACCOUNTS_JSON: {e}")
+
     accounts = []
     if not ACCOUNTS_FILE.exists():
         log.warning("No accounts.json found. Running without authentication (very limited).")

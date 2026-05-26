@@ -363,7 +363,7 @@ export default function ExtraccionPage() {
                     </p>
                     <button
                       id={`view-error-${a.id}-button`}
-                      onClick={() => setSelectedError(a.errorMessage)}
+                      onClick={() => setSelectedError(a.errorMessage ?? null)}
                       className="text-[8px] font-extrabold uppercase tracking-wider text-[#6be1e3] hover:text-[#6be1e3]/80 transition-colors flex items-center gap-0.5"
                     >
                       Ver Detalle

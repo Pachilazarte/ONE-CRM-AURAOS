@@ -2,12 +2,13 @@
 export interface Analysis {
   id: string;
   target: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'error';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'error' | 'cancelled';
   usersAnalyzed: number;
   maxFollowers?: number;
   usersFound: number;
   progress: number;
   date: string;
+  startedAt?: string;
   errorMessage?: string;
 }
 

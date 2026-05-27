@@ -28,6 +28,9 @@ PYTHON      = sys.executable
 resend.api_key = os.environ.get("RESEND_API_KEY", "")
 RESEND_FROM    = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
 
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-ultra-253b-v1:free")
+
 # ── Supabase client (PostgREST only — no storage dependency) ──
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
@@ -397,6 +400,7 @@ def get_all_jobs():
                 "maxFollowers": display_max, "usersFound": j.get("leads_found") or 0,
                 "progress": progress,
                 "date": (j.get("created_at") or "")[:10],
+                "startedAt": j.get("started_at"),
                 "errorMessage": j.get("error_message"),
             })
         return jsonify(result)
@@ -472,6 +476,91 @@ def get_job_status(job_id):
     return jsonify({"id": job["id"], "status": job["status"], "leadsFound": leads_found,
                      "progress": 100 if job["status"] == "completed" else (50 if job["status"] == "processing" else 0),
                      "errorMessage": job.get("errorMessage")})
+
+
+# ── Cancel Job ──────────────────────────────
+
+@app.post("/api/v1/scraping/cancel/<job_id>")
+def cancel_job(job_id):
+    if USE_SUPABASE:
+        sb = get_sb()
+        resp = sb.from_("scraper_jobs").select("status").eq("id", job_id).execute()
+        if not resp.data:
+            return jsonify({"error": "Job not found"}), 404
+        current_status = resp.data[0].get("status")
+        if current_status not in ("pending", "running"):
+            return jsonify({"error": f"Cannot cancel job with status '{current_status}'"}), 400
+        sb.from_("scraper_jobs").update({
+            "status": "cancelled",
+            "finished_at": datetime.now().isoformat(),
+            "error_message": "Cancelado manualmente por el usuario."
+        }).eq("id", job_id).execute()
+        return jsonify({"ok": True, "jobId": job_id, "status": "cancelled"})
+    return jsonify({"error": "Supabase not configured"}), 500
+
+
+# ── AI Email Generation ───────────────────────
+
+@app.post("/api/v1/emails/generate-ai")
+def generate_ai_email():
+    body = request.get_json(force=True) or {}
+    prompt = body.get("prompt", "").strip()
+    styles = body.get("styles", [])  # list of style tags
+    context = body.get("context", "").strip()
+
+    if not prompt:
+        return jsonify({"error": "prompt es requerido"}), 400
+    if not OPENROUTER_API_KEY:
+        return jsonify({"error": "OPENROUTER_API_KEY no configurada en el servidor"}), 500
+
+    style_desc = ", ".join(styles) if styles else "profesional"
+    system_msg = (
+        "Eres un experto en email marketing B2B para empresas de RRHH en Argentina. "
+        "Tu tarea es generar únicamente el cuerpo de un email en formato HTML listo para enviar. "
+        "El HTML debe estar bien estructurado, ser visualmente atractivo con estilos inline, "
+        "incluir colores corporativos suaves y ser responsivo. "
+        "NO incluyas explicaciones ni código markdown, SOLO el HTML del email."
+    )
+    user_msg = f"""Genera un email con las siguientes características:
+- Estilo: {style_desc}
+- Objetivo/tema: {prompt}
+{('- Contexto adicional: ' + context) if context else ''}
+
+Devuelve SOLO el HTML del email, sin explicaciones."""
+
+    try:
+        import urllib.request
+        import json as _json
+        req_data = _json.dumps({
+            "model": OPENROUTER_MODEL,
+            "messages": [
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg}
+            ],
+            "max_tokens": 2000,
+            "temperature": 0.7
+        }).encode()
+        req = urllib.request.Request(
+            "https://openrouter.ai/api/v1/chat/completions",
+            data=req_data,
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://one-crm-auraos.onrender.com",
+                "X-Title": "ONE CRM Email Generator"
+            },
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp_ai:
+            result = _json.loads(resp_ai.read().decode())
+        html_content = result["choices"][0]["message"]["content"].strip()
+        # Strip any markdown code fences if the model added them
+        if html_content.startswith("```"):
+            lines = html_content.split("\n")
+            html_content = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+        return jsonify({"html": html_content, "model": OPENROUTER_MODEL})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ── Leads (with pagination) ──────────────────

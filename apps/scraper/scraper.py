@@ -923,6 +923,7 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
                     if username_lower in known_usernames:
                         if job_id and checked % 20 == 0:
                             update_db_stats(job_id, leads_found, checked)
+                        log.info(f"Skip @{username} (ya analizado previamente) [{checked}/{max_followers}]")
                         continue
 
                     try:
@@ -949,11 +950,12 @@ def run(target: str, output: str, max_followers: int, known_emails_file: str = "
                         # Filtrar solo cuentas business/profesionales
                         if not (full_info.get("is_business") or full_info.get("is_professional_account")):
                             known_usernames.add(username_lower)
-                            if job_id and (checked % 2 == 0 or checked == max_followers):
+                            if job_id and (checked % 5 == 0 or checked == max_followers):
                                 update_db_stats(job_id, leads_found, checked)
                             if checked % 10 == 0:
                                 with open(known_usernames_file_path, "w", encoding="utf-8") as f:
                                     json.dump(list(known_usernames), f)
+                                log.info(f"Progreso: {checked}/{max_followers} revisados, {leads_found} leads")
                             continue
 
                         email = (full_info.get("public_email") or "").strip()

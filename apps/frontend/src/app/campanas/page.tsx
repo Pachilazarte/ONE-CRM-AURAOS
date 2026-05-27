@@ -58,6 +58,13 @@ export default function CampanasPage() {
   const [formBody, setFormBody]       = useState('');
   const [formSource, setFormSource]   = useState('__all__');
   const [sourceType, setSourceType]   = useState<'analisis'|'lista'>('analisis');
+
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [editSubject, setEditSubject] = useState('');
+  const [editBody, setEditBody] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
+  const [editResult, setEditResult] = useState<{ok:boolean,msg:string}|null>(null);
+  const [showEditPreview, setShowEditPreview] = useState(true);
   const [selectedSenders, setSelectedSenders] = useState<string[]>([]); 
 
   const [aiGenerating, setAiGenerating] = useState(false);
@@ -205,6 +212,36 @@ export default function CampanasPage() {
     }
   };
 
+  const openEditCampaign = (c: Campaign) => {
+    setEditingCampaign(c);
+    setEditSubject(c.subject);
+    setEditBody(c.html || '');
+    setEditResult(null);
+    setShowEditPreview(true);
+  };
+
+  const handleUpdateCampaign = async () => {
+    if (!editingCampaign) return;
+    setEditSaving(true);
+    setEditResult(null);
+    try {
+      const res = await fetch(`${API_BASE}/campaigns/${editingCampaign.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: editSubject, html: editBody })
+      });
+      if (res.ok) {
+        setEditResult({ ok: true, msg: 'Campaña actualizada.' });
+        fetchAll();
+      } else {
+        setEditResult({ ok: false, msg: 'Error al actualizar.' });
+      }
+    } catch {
+      setEditResult({ ok: false, msg: 'Error de red.' });
+    }
+    setEditSaving(false);
+  };
+
   const totalSent    = campaigns.reduce((s, c) => s + (c.sent ?? 0), 0);
   const totalLeadsDB = leads.length;
   const activeCamps  = campaigns.filter(c => c.status === 'sending' || c.status === 'pending').length;
@@ -296,7 +333,7 @@ export default function CampanasPage() {
                 const Icon  = meta.icon;
                 const pct   = c.total > 0 ? Math.round(((c.sent + c.failed) / c.total) * 100) : 0;
                 return (
-                  <div key={c.id} className="glass-card p-5 rounded-2xl flex items-center gap-5">
+                  <div key={c.id} className="glass-card p-5 rounded-2xl flex items-center gap-5 group relative cursor-pointer hover:border-white/20 transition-colors" onClick={() => openEditCampaign(c)}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-extrabold text-[#fefeff] truncate">{c.name || c.subject}</span>
@@ -577,6 +614,56 @@ export default function CampanasPage() {
                  </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+      )}
+        </div>
+      )}
+
+      {editingCampaign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-2xl glass-card rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+              <h2 className="text-base font-extrabold font-exo">Editar Campaña: {editingCampaign.name || editingCampaign.subject}</h2>
+              <button type="button" onClick={() => setEditingCampaign(null)} className="text-[#a4a8c0] hover:text-white"><X size={18}/></button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-extrabold uppercase tracking-widest text-[#a4a8c0]">Asunto</label>
+                <input value={editSubject} onChange={e => setEditSubject(e.target.value)} className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-[#fefeff] focus:outline-none focus:border-[#e17bd7] transition-all"/>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-[9px] font-extrabold uppercase tracking-widest text-[#a4a8c0]">Cuerpo HTML</label>
+                  <button type="button" onClick={() => setShowEditPreview(!showEditPreview)} className="text-[10px] text-[#e17bd7] font-bold hover:underline">
+                    {showEditPreview ? 'Editar Código HTML' : 'Vista Previa Visual'}
+                  </button>
+                </div>
+                {showEditPreview ? (
+                  <div 
+                    className="w-full bg-white text-black rounded-xl px-4 py-4 text-sm min-h-[250px] max-h-[400px] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#e17bd7] border border-transparent"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={e => setEditBody(e.currentTarget.innerHTML)}
+                    dangerouslySetInnerHTML={{ __html: editBody || '<p style="color:#9ca3af;font-style:italic;font-size:12px;">Vacío...</p>' }}
+                  />
+                ) : (
+                  <textarea value={editBody} onChange={e => setEditBody(e.target.value)} rows={12} className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-[#fefeff] font-mono resize-none focus:outline-none focus:border-[#e17bd7] transition-all"/>
+                )}
+              </div>
+              {editResult && (
+                <div className={`flex items-center gap-2 text-xs rounded-xl px-3 py-2 border ${editResult.ok ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20'}`}>
+                  {editResult.ok ? <CheckCircle size={13}/> : <AlertCircle size={13}/>}
+                  {editResult.msg}
+                </div>
+              )}
+            </div>
+            <div className="p-4 border-t border-white/5 flex justify-end gap-3">
+              <button type="button" onClick={() => setEditingCampaign(null)} className="px-5 py-2 text-xs font-bold text-[#a4a8c0] hover:text-white transition-colors">Cerrar</button>
+              <button type="button" onClick={handleUpdateCampaign} disabled={editSaving} className="btn-one px-6 py-2 text-xs uppercase font-black tracking-widest disabled:opacity-50">
+                {editSaving ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
             </div>
           </div>
         </div>

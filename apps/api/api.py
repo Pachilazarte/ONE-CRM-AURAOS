@@ -923,7 +923,32 @@ def get_campaign(campaign_id):
     c = campaigns.get(campaign_id)
     if not c:
         return jsonify({"error": "Campaign not found"}), 404
-    return jsonify(c)
+    return jsonify(campaigns[campaign_id])
+
+
+@app.put("/api/v1/campaigns/<campaign_id>")
+def update_campaign(campaign_id):
+    data = request.get_json(force=True) or {}
+    if USE_SUPABASE:
+        sb = get_sb()
+        update_data = {}
+        if "name" in data: update_data["name"] = data["name"]
+        if "subject" in data: update_data["subject"] = data["subject"]
+        if "html" in data: update_data["html"] = data["html"]
+        if not update_data: return jsonify({"status": "ok"}), 200
+        resp = sb.from_("campaigns").update(update_data).eq("id", campaign_id).execute()
+        if not resp.data: return jsonify({"error": "Campaign not found"}), 404
+        return jsonify({"status": "updated"})
+
+    campaigns = load_campaigns()
+    if campaign_id not in campaigns:
+        return jsonify({"error": "Campaign not found"}), 404
+    c = campaigns[campaign_id]
+    if "name" in data: c["name"] = data["name"]
+    if "subject" in data: c["subject"] = data["subject"]
+    if "html" in data: c["html"] = data["html"]
+    save_campaigns(campaigns)
+    return jsonify({"status": "updated"})
 
 
 # ── Entry point ──────────────────────────────

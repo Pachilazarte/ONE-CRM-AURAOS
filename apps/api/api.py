@@ -5,7 +5,8 @@ Instagram Lead Scraper — Python API (v2 — Supabase backend)
 import os
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
+dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
+load_dotenv(dotenv_path=dotenv_path)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS

@@ -29,7 +29,7 @@ resend.api_key = os.environ.get("RESEND_API_KEY", "")
 RESEND_FROM    = os.environ.get("RESEND_FROM", "onboarding@resend.dev")
 
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-ultra-253b-v1:free")
+OPENROUTER_MODEL   = os.environ.get("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
 
 # ── Supabase client (PostgREST only — no storage dependency) ──
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")

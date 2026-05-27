@@ -165,8 +165,8 @@ export default function CampanasPage() {
     setAiGenerating(true);
     setAiOpen(false);
     try {
-      const fullPrompt = \`Generá un email en HTML con tono \${aiTone}. Usa estas características: \${aiPrompt}. Es MUY IMPORTANTE que incluyas variables como {{first_name}} o {{website}} o {{username}} en el texto para personalización automática.\`;
-      const res = await fetch(\`\${API_BASE}/emails/generate-ai\`, {
+      const fullPrompt = `Generá un email en HTML con tono ${aiTone}. Usa estas características: ${aiPrompt}. Es MUY IMPORTANTE que incluyas variables como {{first_name}} o {{website}} o {{username}} en el texto para personalización automática.`;
+      const res = await fetch(`${API_BASE}/emails/generate-ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: fullPrompt, styles: [aiTone] }),
@@ -266,7 +266,7 @@ export default function CampanasPage() {
                   {varsOpen && (
                     <div className="absolute top-full left-0 mt-2 w-40 bg-[#1a1520] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-10">
                       {['first_name', 'website', 'username', 'email', 'source_account'].map(v => (
-                        <button key={v} onClick={() => { insertTextAtCursor(\`{{\${v}}}\`); setVarsOpen(false); }} className="w-full text-left px-4 py-2.5 text-xs text-[#a4a8c0] hover:bg-white/5 hover:text-white transition-colors font-mono">
+                        <button key={v} onClick={() => { insertTextAtCursor(`{{${v}}}`); setVarsOpen(false); }} className="w-full text-left px-4 py-2.5 text-xs text-[#a4a8c0] hover:bg-white/5 hover:text-white transition-colors font-mono">
                           {'{{'}{v}{'}}'}
                         </button>
                       ))}
@@ -357,8 +357,8 @@ export default function CampanasPage() {
             <div className="space-y-1.5 relative">
               <label className="text-[11px] font-bold text-[#a4a8c0]">Fuente</label>
               <div className="flex bg-black/40 border border-white/10 rounded-xl p-1 mb-2">
-                <button onClick={() => setSourceType('analisis')} className={\`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all \${sourceType === 'analisis' ? 'bg-white/10 text-white' : 'text-[#a4a8c0] hover:text-white'}\`}>Análisis</button>
-                <button onClick={() => setSourceType('lista')} className={\`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all \${sourceType === 'lista' ? 'bg-white/10 text-white' : 'text-[#a4a8c0] hover:text-white'}\`}>Lista</button>
+                <button onClick={() => setSourceType('analisis')} className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${sourceType === 'analisis' ? 'bg-white/10 text-white' : 'text-[#a4a8c0] hover:text-white'}`}>Análisis</button>
+                <button onClick={() => setSourceType('lista')} className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${sourceType === 'lista' ? 'bg-white/10 text-white' : 'text-[#a4a8c0] hover:text-white'}`}>Lista</button>
               </div>
               <div className="relative">
                 <select 

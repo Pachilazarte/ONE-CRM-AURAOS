@@ -128,7 +128,15 @@ export default function CampanasPage() {
     setSending(true);
     setSendError('');
     try {
-      const contacts = targetLeads.map(l => ({ email: l.email!, name: l.fullname || l.username }));
+      const contacts = targetLeads.map(l => ({ 
+        email: l.email!, 
+        name: l.fullname || l.username || '',
+        first_name: (l.fullname || l.username || '').split(' ')[0],
+        username: l.username || '',
+        website: l.website || '',
+        empresa: l.company || '',
+        source_account: l.sourceAccount || ''
+      }));
       
       // If user typed in 'texto' mode, optionally wrap in p tags so it looks okay as HTML
       let htmlToSend = formBody;

@@ -252,12 +252,22 @@ def _run_campaign_supabase(campaign_id: str):
     camp_resp = sb.from_("campaigns").select("subject, html").eq("id", campaign_id).execute()
     camp = camp_resp.data[0] if camp_resp.data else {}
 
+    def replace_vars(text: str, c: dict) -> str:
+        if not text: return ""
+        for k, v in c.items():
+            if v is not None:
+                text = text.replace(f"{{{{{k}}}}}", str(v))
+        # Default empty for missing ones
+        import re
+        return re.sub(r'\{\{.*?\}\}', '', text)
+
     for i in range(0, len(contacts), BATCH_SIZE):
         batch = contacts[i:i+BATCH_SIZE]
         for c in batch:
             try:
-                resend.Emails.send({"from": RESEND_FROM, "to": c["email"], "subject": camp["subject"],
-                                    "html": camp["html"].replace("{{name}}", c.get("name") or "")})
+                subj = replace_vars(camp.get("subject", ""), c)
+                body = replace_vars(camp.get("html", ""), c)
+                resend.Emails.send({"from": RESEND_FROM, "to": c["email"], "subject": subj, "html": body})
                 sb.from_("campaign_contacts").update({"status": "sent", "sent_at": datetime.now().isoformat()}).eq("id", c["id"]).execute()
                 sent += 1
             except Exception as e:
@@ -277,12 +287,21 @@ def _run_campaign_json(campaign_id: str):
     save_campaigns(campaigns)
     contacts = camp["contacts"]
     sent = failed = 0
+
+    def replace_vars(text: str, c: dict) -> str:
+        if not text: return ""
+        for k, v in c.items():
+            if v is not None:
+                text = text.replace(f"{{{{{k}}}}}", str(v))
+        import re
+        return re.sub(r'\{\{.*?\}\}', '', text)
     for i in range(0, len(contacts), BATCH_SIZE):
         batch = contacts[i:i+BATCH_SIZE]
         for contact in batch:
             try:
-                resend.Emails.send({"from": RESEND_FROM, "to": contact["email"], "subject": camp["subject"],
-                                    "html": camp["html"].replace("{{name}}", contact.get("name", ""))})
+                subj = replace_vars(camp.get("subject", ""), contact)
+                body = replace_vars(camp.get("html", ""), contact)
+                resend.Emails.send({"from": RESEND_FROM, "to": contact["email"], "subject": subj, "html": body})
                 contact["status"] = "sent"
                 sent += 1
             except Exception as e:

@@ -190,14 +190,34 @@ export default function ProspectosPage() {
     setEmailResult(null);
     try {
       if (emailMode === 'single' && emailTargets[0]) {
+        const t = emailTargets[0];
+        const fn = (t.fullname || t.username || '').split(' ')[0];
+        
+        const replaceVars = (str: string) => str
+          .replace(/\{\{name\}\}/g, t.fullname || t.username || '')
+          .replace(/\{\{first_name\}\}/g, fn)
+          .replace(/\{\{username\}\}/g, t.username || '')
+          .replace(/\{\{website\}\}/g, t.website || '')
+          .replace(/\{\{empresa\}\}/g, t.company || '')
+          .replace(/\{\{email\}\}/g, t.email || '')
+          .replace(/\{\{source_account\}\}/g, t.sourceAccount || '');
+
         const res = await fetch(`${API_BASE}/emails/send`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ to: emailTargets[0].email, subject: emailSubject, html: emailBody }),
+          body: JSON.stringify({ to: t.email, subject: replaceVars(emailSubject), html: replaceVars(emailBody) }),
         });
         const d = await res.json();
         setEmailResult(res.ok ? { ok: true, msg: 'Email enviado.' } : { ok: false, msg: d.error || 'Error.' });
       } else {
-        const contacts = emailTargets.map(l => ({ email: l.email!, name: l.fullname || l.username }));
+        const contacts = emailTargets.map(l => ({ 
+          email: l.email!, 
+          name: l.fullname || l.username || '',
+          first_name: (l.fullname || l.username || '').split(' ')[0],
+          username: l.username || '',
+          website: l.website || '',
+          empresa: l.company || '',
+          source_account: l.sourceAccount || ''
+        }));
         const res = await fetch(`${API_BASE}/campaigns`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subject: emailSubject, html: emailBody, contacts }),

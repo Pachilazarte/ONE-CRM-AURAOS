@@ -819,6 +819,18 @@ def send_single_email():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.get("/api/v1/email-accounts")
+def get_email_accounts():
+    """Return configured email sender accounts (currently just RESEND_FROM)."""
+    return jsonify([
+        {
+            "id": "1",
+            "name": "Cuenta Principal",
+            "email": RESEND_FROM,
+            "limit": "Ilimitado"
+        }
+    ])
+
 
 # ── Campaigns ────────────────────────────────
 

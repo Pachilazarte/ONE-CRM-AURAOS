@@ -430,7 +430,8 @@ export default function CampanasPage() {
                             <button key={t.label} onClick={() => { 
                               let txt = t.html;
                               if (bodyMode === 'texto') txt = txt.replace(/<[^>]+>/g, '\n').trim(); 
-                              insertTextAtCursor(txt); 
+                              setFormSubject(t.label);
+                              setFormBody(txt);
                               setTemplatesOpen(false); 
                             }} className="w-full text-left px-4 py-3 text-xs font-bold text-[#a4a8c0] hover:bg-white/5 hover:text-white transition-colors border-b border-white/5 last:border-0">
                               {t.label}

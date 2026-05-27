@@ -520,6 +520,7 @@ def generate_ai_email():
         "Tu tarea es generar únicamente el cuerpo de un email en formato HTML listo para enviar. "
         "El HTML debe estar bien estructurado, ser visualmente atractivo con estilos inline, "
         "incluir colores corporativos suaves y ser responsivo. "
+        "MUY IMPORTANTE: ES OBLIGATORIO que incluyas siempre las siguientes variables en el texto para personalización automática: {{first_name}}, {{username}} y {{empresa}}. Úsalas de forma natural. "
         "NO incluyas explicaciones ni código markdown, SOLO el HTML del email."
     )
     user_msg = f"""Genera un email con las siguientes características:
@@ -527,6 +528,7 @@ def generate_ai_email():
 - Objetivo/tema: {prompt}
 {('- Contexto adicional: ' + context) if context else ''}
 
+REGLA ESTRICTA: El mensaje debe contener los textos exactos '{{{{first_name}}}}', '{{{{username}}}}' y '{{{{empresa}}}}'.
 Devuelve SOLO el HTML del email, sin explicaciones."""
 
     try:

@@ -29,7 +29,7 @@ export interface Lead {
 }
 
 // ── CRM ───────────────────────────────────────────────────────────────────────
-export type DealStage = 'nuevo' | 'contactado' | 'interesado' | 'propuesta' | 'negociacion' | 'ganado' | 'perdido';
+export type DealStage = 'nuevo' | 'contactado' | 'respuestas' | 'recontactos' | 'propuesta' | 'ganado' | 'perdido';
 export type ContactStatus = 'cold' | 'warm' | 'hot';
 export type TaskPriority = 'low' | 'medium' | 'high';
 export type UserRole = 'admin' | 'vendedor';
@@ -125,11 +125,11 @@ export interface PaginatedResponse<T> {
 }
 
 export const DEAL_STAGES: { key: DealStage; label: string; color: string }[] = [
-  { key: 'nuevo',       label: 'Nuevo Lead',    color: '#6be1e3' },
+  { key: 'nuevo',       label: 'Nuevos',        color: '#6be1e3' },
   { key: 'contactado',  label: 'Contactado',    color: '#a4a8c0' },
-  { key: 'interesado',  label: 'Interesado',    color: '#e4c76a' },
-  { key: 'propuesta',   label: 'Propuesta',     color: '#e17bd7' },
-  { key: 'negociacion', label: 'Negociación',   color: '#b673df' },
+  { key: 'respuestas',  label: 'Respuestas',    color: '#e4c76a' },
+  { key: 'recontactos', label: 'Recontactos',   color: '#e17bd7' },
+  { key: 'propuesta',   label: 'Propuesta',     color: '#b673df' },
   { key: 'ganado',      label: 'Ganado ✓',      color: '#34d399' },
   { key: 'perdido',     label: 'Perdido ✗',     color: '#ef4444' },
 ];

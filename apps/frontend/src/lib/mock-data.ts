@@ -20,8 +20,8 @@ export const MOCK_CONTACTS: CRMContact[] = [
 
 export const MOCK_DEALS: Deal[] = [
   { id: 'd1', contactName: 'Mariana Gutiérrez',  contactId: 'c1', amount: 18500, stage: 'propuesta',   probability: 65, assignedTo: 'Carlos Méndez',  expectedClose: '2026-05-30', createdAt: '2026-04-10' },
-  { id: 'd2', contactName: 'Valeria Peralta',    contactId: 'c3', amount: 24000, stage: 'negociacion', probability: 80, assignedTo: 'Carlos Méndez',  expectedClose: '2026-05-25', createdAt: '2026-04-15' },
-  { id: 'd3', contactName: 'Fernando Sosa',      contactId: 'c2', amount: 11200, stage: 'interesado',  probability: 40, assignedTo: 'Ana Rodríguez',  expectedClose: '2026-06-10', createdAt: '2026-04-20' },
+  { id: 'd2', contactName: 'Valeria Peralta',    contactId: 'c3', amount: 24000, stage: 'recontactos', probability: 80, assignedTo: 'Carlos Méndez',  expectedClose: '2026-05-25', createdAt: '2026-04-15' },
+  { id: 'd3', contactName: 'Fernando Sosa',      contactId: 'c2', amount: 11200, stage: 'respuestas',  probability: 40, assignedTo: 'Ana Rodríguez',  expectedClose: '2026-06-10', createdAt: '2026-04-20' },
   { id: 'd4', contactName: 'Ignacio Torres',     contactId: 'c6', amount: 9800,  stage: 'contactado',  probability: 25, assignedTo: 'Ana Rodríguez',  expectedClose: '2026-06-20', createdAt: '2026-04-25' },
   { id: 'd5', contactName: 'Daniela Vega',       contactId: 'c5', amount: 15000, stage: 'nuevo',       probability: 10, assignedTo: 'Carlos Méndez',  expectedClose: '2026-07-01', createdAt: '2026-05-05' },
   { id: 'd6', contactName: 'Martín Blanco',      contactId: 'c8', amount: 32000, stage: 'propuesta',   probability: 60, assignedTo: 'Ana Rodríguez',  expectedClose: '2026-05-28', createdAt: '2026-05-05' },

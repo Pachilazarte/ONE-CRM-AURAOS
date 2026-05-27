@@ -171,8 +171,8 @@ export default function DashboardPage() {
         </div>
         {/* Pipeline stage bars */}
         <div className="grid grid-cols-7 gap-1 pt-1">
-          {['Nuevo','Contactado','Interesado','Propuesta','Negoc.','Ganado','Perdido'].map((stage, i) => {
-            const stageKeys = ['nuevo','contactado','interesado','propuesta','negociacion','ganado','perdido'];
+          {['Nuevos','Contactado','Respuestas','Recontactos','Propuesta','Ganado','Perdido'].map((stage, i) => {
+            const stageKeys = ['nuevo','contactado','respuestas','recontactos','propuesta','ganado','perdido'];
             const cnt = MOCK_DEALS.filter(d => d.stage === stageKeys[i]).length;
             const max = Math.max(...stageKeys.map(k => MOCK_DEALS.filter(d => d.stage === k).length), 1);
             const colors = ['#6be1e3','#a4a8c0','#e4c76a','#e17bd7','#b673df','#34d399','#ef4444'];

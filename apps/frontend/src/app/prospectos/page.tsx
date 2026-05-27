@@ -86,6 +86,7 @@ export default function ProspectosPage() {
   const [emailBody, setEmailBody]             = useState('');
   const [emailSending, setEmailSending]       = useState(false);
   const [emailResult, setEmailResult]         = useState<{ok:boolean;msg:string}|null>(null);
+  const [showPreview, setShowPreview]         = useState(true);
 
   // ── fetch ──────────────────────────────────
   const fetchLeads = useCallback(() => {
@@ -580,13 +581,28 @@ export default function ProspectosPage() {
 
               {/* body */}
               <div className="space-y-1.5">
-                <label className="text-[9px] font-extrabold uppercase tracking-widest text-[#a4a8c0]">
-                  Cuerpo *
-                  {emailMode==='bulk' && <span className="ml-2 font-normal normal-case text-[#a4a8c0]/60">usá {`{{name}}`} para personalizar</span>}
-                </label>
-                <textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={6}
-                  placeholder="<p>Hola{{name ? ` ${name}` : ''}},</p><p>...</p>"
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-[#fefeff] font-mono resize-none focus:outline-none focus:border-[#e17bd7] transition-all"/>
+                <div className="flex items-center justify-between">
+                  <label className="text-[9px] font-extrabold uppercase tracking-widest text-[#a4a8c0]">
+                    Cuerpo *
+                    {emailMode==='bulk' && <span className="ml-2 font-normal normal-case text-[#a4a8c0]/60">usá {`{{name}}`} para personalizar</span>}
+                  </label>
+                  <button type="button" onClick={() => setShowPreview(!showPreview)} className="text-[10px] text-[#e17bd7] font-bold hover:underline">
+                    {showPreview ? 'Editar Código HTML' : 'Vista Previa Visual'}
+                  </button>
+                </div>
+                {showPreview ? (
+                  <div 
+                    className="w-full bg-white text-black rounded-xl px-4 py-4 text-sm min-h-[150px] max-h-[350px] overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#e17bd7] border border-transparent"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={e => setEmailBody(e.currentTarget.innerHTML)}
+                    dangerouslySetInnerHTML={{ __html: emailBody || '<p style="color:#9ca3af;font-style:italic;font-size:12px;">Vacío...</p>' }}
+                  />
+                ) : (
+                  <textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} rows={6}
+                    placeholder="<p>Hola{{name ? ` ${name}` : ''}},</p><p>...</p>"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-[#fefeff] font-mono resize-none focus:outline-none focus:border-[#e17bd7] transition-all"/>
+                )}
               </div>
 
               {/* result */}

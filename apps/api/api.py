@@ -521,7 +521,7 @@ def generate_ai_email():
         "El HTML debe estar bien estructurado, ser visualmente atractivo con estilos inline, "
         "incluir colores corporativos suaves y ser responsivo. "
         "MUY IMPORTANTE: ES OBLIGATORIO que incluyas siempre las siguientes variables en el texto para personalización automática: {{first_name}}, {{username}} y {{empresa}}. Úsalas de forma natural. "
-        "NO incluyas explicaciones ni código markdown, SOLO el HTML del email."
+        "NO incluyas explicaciones ni código markdown. DEVUELVE SOLO EL CONTENIDO HTML INTERNO. NO INCLUYAS las etiquetas <!DOCTYPE html>, <html>, <head> ni <body>."
     )
     user_msg = f"""Genera un email con las siguientes características:
 - Estilo: {style_desc}

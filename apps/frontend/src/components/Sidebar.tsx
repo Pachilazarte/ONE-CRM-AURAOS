@@ -121,7 +121,10 @@ export default function Sidebar() {
         <nav className="space-y-0.5">
           {!collapsed && <p className="text-[9px] uppercase font-bold tracking-[0.15em] text-[#a4a8c0]/40 px-3 mb-2">CRM</p>}
           {collapsed && <div className="h-3" />}
-          {CRM_NAV.map(item => <NavLink key={item.href} {...item} />)}
+          {CRM_NAV.map(item => {
+            if (item.href === '/pipeline' && user?.role === 'admin') return null;
+            return <NavLink key={item.href} {...item} />;
+          })}
         </nav>
 
         <nav className="space-y-0.5 mt-5">

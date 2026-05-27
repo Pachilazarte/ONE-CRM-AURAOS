@@ -338,11 +338,11 @@ export default function ProspectosPage() {
             className="flex items-center gap-2 py-2.5 px-4 text-[10px] uppercase tracking-widest font-black rounded-xl border border-[#6be1e3]/30 text-[#6be1e3] hover:bg-[#6be1e3]/10 transition-all">
             <FileUp size={12} />Importar CSV
           </button>
-          <button type="button" onClick={handleExportExcel} disabled={!filtered.length||isDownloadingExcel}
+          <button type="button" onClick={handleExportExcel} disabled={filtered.length === 0 || isDownloadingExcel}
             className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all font-extrabold text-[10px] uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-20">
             {isDownloadingExcel?<RefreshCcw className="animate-spin" size={13}/>:<FileSpreadsheet size={13}/>}Excel
           </button>
-          <button type="button" onClick={handleExportCSV} disabled={!filtered.length||isDownloadingCSV}
+          <button type="button" onClick={handleExportCSV} disabled={filtered.length === 0 || isDownloadingCSV}
             className="bg-[#e17bd7]/10 border border-[#e17bd7]/30 text-[#e17bd7] hover:bg-[#e17bd7] hover:text-black transition-all font-extrabold text-[10px] uppercase tracking-wider px-4 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-20">
             {isDownloadingCSV?<RefreshCcw className="animate-spin" size={13}/>:<Download size={13}/>}CSV
           </button>

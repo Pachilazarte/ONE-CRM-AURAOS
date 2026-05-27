@@ -891,7 +891,7 @@ def list_campaigns():
         result = []
         for c in (resp.data or []):
             result.append({
-                "id": c["id"], "name": c["name"], "subject": c["subject"],
+                "id": c["id"], "name": c["name"], "subject": c["subject"], "html": c.get("html", ""),
                 "total": c["total"], "sent": c["sent"], "failed": c["failed"],
                 "status": c["status"], "createdAt": c["created_at"],
                 "finishedAt": c.get("finished_at"),
@@ -900,7 +900,7 @@ def list_campaigns():
     campaigns = load_campaigns()
     result = []
     for c in campaigns.values():
-        result.append({"id": c["id"], "name": c["name"], "subject": c["subject"],
+        result.append({"id": c["id"], "name": c["name"], "subject": c["subject"], "html": c.get("html", ""),
                         "total": c["total"], "sent": c["sent"], "failed": c["failed"],
                         "status": c["status"], "createdAt": c["createdAt"],
                         "finishedAt": c.get("finishedAt")})
